@@ -34,12 +34,12 @@ _.each(moduleList, function (i, module) {
 });
 
 // Build nuget config -- jscex.x.x.x.nuspec 
-var buildConfig = function (files) {	
+var buildConfig = function (version, files) {	
 	var config = "<?xml version=\"1.0\" encoding=\"utf-8\"?> \
 	<package xmlns=\"http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd\"> \
 		<metadata> \
 			<id>jscex</id> \
-			<version>" + Jscex.coreVersion + "</version> \
+			<version>" + version + "</version> \
 			<authors>Jeffrey Zhao</authors> \
 			<owners>Jeffrey Zhao</owners> \
 			<licenseUrl>https://github.com/JeffreyZhao/jscex</licenseUrl> \
@@ -47,7 +47,7 @@ var buildConfig = function (files) {
 			<requireLicenseAcceptance>false</requireLicenseAcceptance> \
 			<description>Jscex provides a monadic extensions for JavaScript language and would significantly improve your programming life in certain scenarios.</description> \
 			<summary>Jscex provides a monadic extensions for JavaScript language and would significantly improve your programming life in certain scenarios.</summary> \
-			<releaseNotes>" + Jscex.coreVersion + "</releaseNotes> \
+			<releaseNotes>" + version + "</releaseNotes> \
 			<copyright>Copyright 2012</copyright> \
 			<language>en-US</language> \
 			<tags>Javascript</tags> \
@@ -61,7 +61,7 @@ var buildConfig = function (files) {
 	config = config + "</files> \
 	</package>";
 	
-	fs.writeFileSync(path.join(devDir, "jscex." + Jscex.coreVersion +".nuspec"), config, "utf8");
+	fs.writeFileSync(path.join(devDir, "jscex." + version +".nuspec"), config, "utf8");
 };
 
 // Build nuget package -- jscex.x.x.x.nupkg	
@@ -86,7 +86,7 @@ var buildPackage = eval(Jscex.compile("async", function (module) {
     }
 }));
 
-buildConfig(filelist);
+buildConfig(Jscex.coreVersion, filelist);
 buildPackage().start();
 
         
