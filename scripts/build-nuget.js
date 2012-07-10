@@ -6,7 +6,7 @@ var path = require("path"),
     Jscex = utils.Jscex,
 	execAsync = Jscex.Async.Binding.fromCallback(require('child_process').exec, "_ignored_", "stdout", "stderr"),
     _ = Jscex._;
-    
+
 var devDir = path.join(__dirname, "../bin/nuget");
 var srcDir = path.join(__dirname, "../src");
 var filelist = [];
@@ -22,20 +22,20 @@ utils.copySync(path.join(srcDir, "jscex.js"), path.join(devDir, coreName));
 console.log(coreName + " generated.");
 filelist.push(coreName);
 
-var moduleList = [ "parser", "jit", "builderbase", "async", "async-powerpack", "promise" ];
- 
+var moduleList = ["parser", "jit", "builderbase", "async", "async-powerpack", "promise"];
+
 _.each(moduleList, function (i, module) {
     var fullName = "jscex-" + module;
     var version = Jscex.modules[module].version;
     var outputName = fullName + "-" + version + ".js";
     utils.copySync(path.join(srcDir, fullName + ".js"), path.join(devDir, outputName));
     console.log(outputName + " generated.");
-	filelist.push(outputName);	
+    filelist.push(outputName);
 });
 
 // Build nuget config -- jscex.x.x.x.nuspec 
-var buildConfig = function (version, files) {	
-	var config = "<?xml version=\"1.0\" encoding=\"utf-8\"?> \
+var buildConfig = function (version, files) {
+    var config = "<?xml version=\"1.0\" encoding=\"utf-8\"?> \
 	<package xmlns=\"http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd\"> \
 		<metadata> \
 			<id>jscex</id> \
@@ -53,32 +53,32 @@ var buildConfig = function (version, files) {
 			<tags>Javascript</tags> \
 		</metadata> \
 		<files>";
-		
-	_.each(files, function (i, file) {
-		config = config + "<file src=\"" + file + "\" target=\"content\\Scripts\\" + file + "\" />";
-	});	
-	
-	config = config + "</files> \
+
+    _.each(files, function (i, file) {
+        config = config + "<file src=\"" + file + "\" target=\"content\\Scripts\\" + file + "\" />";
+    });
+
+    config = config + "</files> \
 	</package>";
-	
-	fs.writeFileSync(path.join(devDir, "jscex." + version +".nuspec"), config, "utf8");
+
+    fs.writeFileSync(path.join(devDir, "jscex." + version + ".nuspec"), config, "utf8");
 };
 
 // Build nuget package -- jscex.x.x.x.nupkg	
 var buildPackage = eval(Jscex.compile("async", function (module) {
-	var nugetPath = "\"../tools/Nuget.exe\"";
-	var specPath = path.join(devDir, "jscex." + Jscex.coreVersion +".nuspec");
-	var command = _.format(
+    var nugetPath = "\"../lib/Nuget.exe\"";
+    var specPath = path.join(devDir, "jscex." + Jscex.coreVersion + ".nuspec");
+    var command = _.format(
         "{0} pack {1} -OutputDirectory {2}",
         nugetPath,
         specPath,
 		devDir);
-    	
-	utils.stdout(command);
+
+    utils.stdout(command);
     utils.stdout("Packaging {0}...", specPath);
-    
+
     var r = $await(execAsync(command));
-	if (r.stderr) {
+    if (r.stderr) {
         utils.stdout("failed.\n");
         utils.stderr(r.stderr + "\n");
     } else {
